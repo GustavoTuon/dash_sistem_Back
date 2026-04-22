@@ -7,7 +7,14 @@ const app = express();
 
 app.use(
   cors({
-    origin: env.frontendOrigin,
+    origin(origin, callback) {
+      if (!origin || env.frontendOrigin.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Origin nao permitida pelo CORS."));
+    },
   }),
 );
 app.use(express.json());
@@ -25,4 +32,3 @@ app.use((error, _request, response, _next) => {
 app.listen(env.port, () => {
   console.log(`Backend Rodobach rodando na porta ${env.port}`);
 });
-
